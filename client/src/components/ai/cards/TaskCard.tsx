@@ -1,6 +1,5 @@
 import React from 'react';
 import { ClipboardList, Calendar, ShieldAlert } from 'lucide-react';
-
 interface Task {
   title: string;
   priority: string;
@@ -8,23 +7,19 @@ interface Task {
   riskScore: number;
   completionPercent: number;
 }
-
 interface TaskCardProps {
   tasks: Task[];
 }
-
 export const TaskCard: React.FC<TaskCardProps> = ({ tasks }) => {
   if (!tasks || tasks.length === 0) {
     return null;
   }
-
   return (
     <div className="p-5 rounded-2xl border border-[#6C4DFF]/20 bg-[#0E1626]/90 backdrop-blur-md shadow-lg space-y-4 text-left">
       <div className="flex items-center gap-2 text-indigo-400 border-b border-white/5 pb-2.5">
         <ClipboardList className="w-4 h-4 text-indigo-300" />
         <span className="text-xs font-black tracking-wider uppercase">Active Tasks</span>
       </div>
-
       <div className="space-y-3.5">
         {tasks.map((task, idx) => (
           <div key={idx} className="p-3.5 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all space-y-2">
@@ -40,7 +35,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({ tasks }) => {
                 {task.priority}
               </span>
             </div>
-
             <div className="flex justify-between items-center text-[10px] text-slate-400">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.2 h-3.2 text-indigo-400" />
@@ -51,7 +45,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({ tasks }) => {
                 Risk: {task.riskScore}%
               </span>
             </div>
-
             {/* Completion Progress Bar */}
             <div className="space-y-1 pt-1">
               <div className="flex justify-between text-[9px] text-slate-500 font-bold">
@@ -71,5 +64,4 @@ export const TaskCard: React.FC<TaskCardProps> = ({ tasks }) => {
     </div>
   );
 };
-
 export default TaskCard;

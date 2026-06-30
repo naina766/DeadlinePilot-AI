@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
@@ -26,21 +25,17 @@ import {
   FileText,
   Eye
 } from 'lucide-react';
-
 interface CodeBlockProps {
   code: string;
   language: string;
 }
-
 const CodeBlock: React.FC<CodeBlockProps> = ({ code, language }) => {
   const [copied, setCopied] = useState(false);
-
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
   return (
     <div className="relative group border border-white/5 rounded-xl bg-slate-950/80 overflow-hidden my-3">
       <div className="flex justify-between items-center px-4 py-2 border-b border-white/5 bg-slate-900/40 text-[10px] text-slate-500 font-mono">
@@ -68,7 +63,6 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ code, language }) => {
     </div>
   );
 };
-
 export default function DocsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
@@ -90,11 +84,9 @@ export default function DocsPage() {
     'license': true
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const toggleSection = (id: string) => {
     setOpenSections(prev => ({ ...prev, [id]: !prev[id] }));
   };
-
   const sections = [
     {
       id: 'overview',
@@ -470,15 +462,13 @@ docker push gcr.io/your-project/deadlinepilot-api`}
       )
     }
   ];
-
   const filteredSections = sections.filter(sec => {
     const query = searchQuery.toLowerCase();
     return sec.title.toLowerCase().includes(query) || sec.id.toLowerCase().includes(query);
   });
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white">
-      {/* Header */}
+      {}
       <header className="sticky top-0 z-50 w-full px-6 py-4 flex justify-between items-center border-b border-white/5 bg-slate-950/70 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Link href="/dashboard" className="p-2 rounded-xl bg-slate-900 border border-white/5 text-slate-400 hover:text-white hover:bg-slate-800 transition-all mr-2">
@@ -498,10 +488,9 @@ docker push gcr.io/your-project/deadlinepilot-api`}
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </header>
-
-      {/* Main Container */}
+      {}
       <div className="flex-1 flex max-w-7xl w-full mx-auto relative">
-        {/* Sidebar Desktop */}
+        {}
         <aside className="hidden lg:block w-72 border-r border-white/5 p-6 shrink-0 h-[calc(100vh-73px)] sticky top-[73px] overflow-y-auto space-y-6">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -513,7 +502,6 @@ docker push gcr.io/your-project/deadlinepilot-api`}
               className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-white/5 rounded-xl text-xs placeholder-slate-500 text-slate-200 outline-none focus:border-indigo-500/50 transition-all"
             />
           </div>
-
           <nav className="space-y-1">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block px-3 pb-2">Sections</span>
             {filteredSections.map(sec => {
@@ -531,8 +519,7 @@ docker push gcr.io/your-project/deadlinepilot-api`}
             })}
           </nav>
         </aside>
-
-        {/* Mobile Navigation Drawer */}
+        {}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-40 bg-slate-950/90 backdrop-blur-sm lg:hidden flex flex-col p-6 pt-24 space-y-6">
             <div className="relative">
@@ -559,7 +546,6 @@ docker push gcr.io/your-project/deadlinepilot-api`}
             </nav>
           </div>
         )}
-
         {/* Content Area */}
         <main className="flex-grow p-6 lg:p-12 overflow-y-auto space-y-6">
           {filteredSections.length === 0 ? (
@@ -590,7 +576,6 @@ docker push gcr.io/your-project/deadlinepilot-api`}
                     </div>
                     {isOpen ? <ChevronDown className="w-5 h-5 text-slate-500" /> : <ChevronRight className="w-5 h-5 text-slate-500" />}
                   </button>
-
                   {isOpen && (
                     <div className="mt-5 border-t border-white/5 pt-4 text-sm text-slate-300 leading-relaxed font-medium">
                       {sec.content}
@@ -602,8 +587,7 @@ docker push gcr.io/your-project/deadlinepilot-api`}
           )}
         </main>
       </div>
-
-      {/* Footer */}
+      {}
       <footer className="py-6 border-t border-white/5 text-center text-[10px] text-slate-500 bg-slate-950 shrink-0">
         © 2026 DeadlinePilot AI Documentation Center. Premium Co-Pilot Framework.
       </footer>

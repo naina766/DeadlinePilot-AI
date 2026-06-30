@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useTasks } from '@/hooks/useTasks';
@@ -24,7 +23,6 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recha
 import { SkeletonCard, SkeletonTask } from '@/components/common/Skeleton';
 import { EmptyState } from '@/components/common/EmptyState';
 import Link from 'next/link';
-
 interface AnalyticsData {
   completionRate: number;
   tasksCompleted: number;
@@ -37,16 +35,14 @@ interface AnalyticsData {
   summary: string;
   dailyCompletionTrend: Array<{ day: string; completed: number }>;
 }
-
 interface DashboardPageProps {
   refreshTrigger?: number;
   onRefresh?: () => void;
 }
-
 export default function DashboardPage({ refreshTrigger = 0, onRefresh }: DashboardPageProps) {
   const { token, user } = useAuth();
   const { tasks, loading: tasksLoading, createTask, updateTask } = useTasks(token, refreshTrigger);
-  
+
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [brief, setBrief] = useState('Checking your workspace metrics...');
   const [quickTitle, setQuickTitle] = useState('');
@@ -54,11 +50,9 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
   const [loadingStats, setLoadingStats] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  // Prevent server-side hydration mismatches for timezone calculations
   useEffect(() => {
     setMounted(true);
   }, []);
-
   const getGreeting = () => {
     if (!mounted) return "Welcome Back 👋";
     const hr = new Date().getHours();
@@ -67,11 +61,10 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
     if (hr < 17) return `Good afternoon, ${name} 👋`;
     return `Good evening, ${name} 👋`;
   };
-
   const fetchDashboardData = async () => {
     if (!token) return;
     try {
-      // 1. Fetch Analytics
+
       const analRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/analytics`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -80,7 +73,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
         setAnalytics(analData);
       }
 
-      // 2. Fetch Morning Brief
       const briefRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/ai/brief?type=morning`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -94,16 +86,13 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
       setLoadingStats(false);
     }
   };
-
   useEffect(() => {
     fetchDashboardData();
   }, [token, refreshTrigger]);
-
   const handleQuickAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!quickTitle.trim() || !token) return;
     setSubmittingTask(true);
-
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/ai/natural-add`, {
         method: 'POST',
@@ -113,7 +102,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
         },
         body: JSON.stringify({ text: quickTitle })
       });
-
       if (res.ok) {
         setQuickTitle('');
         fetchDashboardData();
@@ -125,7 +113,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
       setSubmittingTask(false);
     }
   };
-
   const toggleTaskComplete = async (taskId: string, currentStatus: string) => {
     const targetStatus = currentStatus === 'Completed' ? 'Pending' : 'Completed';
     try {
@@ -136,7 +123,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
       console.error(err);
     }
   };
-
   const getPriorityColor = (lvl: string) => {
     switch (lvl) {
       case 'Critical': return 'bg-rose-500/10 border-rose-500/30 text-rose-400';
@@ -146,12 +132,10 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
     }
   };
 
-  // Sort and filter active tasks
   const pendingTasks = tasks.filter(t => t.status !== 'Completed').slice(0, 5);
-
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Top Header & Greeting */}
+      {}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-left">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-100">
@@ -161,7 +145,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
             Clear skies ahead. Today is {mounted ? formatISTDate(new Date()) : '...'}.
           </p>
         </div>
-
         {/* NLP Quick Add Form */}
         <form onSubmit={handleQuickAdd} className="flex gap-2 w-full md:w-96">
           <input 
@@ -181,7 +164,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
           </button>
         </form>
       </div>
-
       {/* AI Daily Briefing Banner */}
       <div className="glass-card p-5 border-indigo-500/20 bg-indigo-950/20 active-border-glow overflow-hidden relative text-left">
         <div className="absolute top-[-20%] right-[-5%] w-60 h-60 rounded-full bg-cyan-500/5 blur-[50px]" />
@@ -202,7 +184,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
           </div>
         </div>
       </div>
-
       {/* Grid: Overview Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-left">
         {/* Productivity Score dial */}
@@ -223,8 +204,7 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
           </div>
           <span className="text-xs text-indigo-300 font-medium">Performance Clearance Rating</span>
         </div>
-
-        {/* Focus Timer Hours */}
+        {}
         <div className="glass-card p-6 flex flex-col justify-between">
           <div className="flex justify-between items-center pb-2 border-b border-white/5">
             <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase">Focus Duration</span>
@@ -238,8 +218,7 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
           </div>
           <span className="text-xs text-cyan-400 font-semibold">Based on target calculations</span>
         </div>
-
-        {/* Daily Clearance Stats */}
+        {}
         <div className="glass-card p-6 flex flex-col justify-between">
           <div className="flex justify-between items-center pb-2 border-b border-white/5">
             <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase">Task Clearance</span>
@@ -256,8 +235,7 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
             <span className="text-rose-400">Missed: {analytics?.tasksMissed || 0}</span>
           </div>
         </div>
-
-        {/* Completion Rate Stats */}
+        {}
         <div className="glass-card p-6 flex flex-col justify-between">
           <div className="flex justify-between items-center pb-2 border-b border-white/5">
             <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase">Completion Rate</span>
@@ -277,13 +255,12 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
           </div>
         </div>
       </div>
-
-      {/* Grid: Primary Columns (2/3 Left, 1/3 Right) */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
-        
-        {/* Left Column (2/3): Tasks and Weekly Trends */}
+
+        {}
         <div className="lg:col-span-2 space-y-6">
-          {/* Active Task Dashboard */}
+          {}
           <div className="glass-card p-6 space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-white/5">
               <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase">Active Task Dashboard</h3>
@@ -291,7 +268,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
                 View All <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
-
             {tasksLoading ? (
               <div className="space-y-3">
                 <SkeletonTask />
@@ -341,8 +317,7 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
               </div>
             )}
           </div>
-
-          {/* Weekly Task Clearance Trends chart */}
+          {}
           <div className="glass-card p-6 space-y-4">
             <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase border-b border-white/5 pb-2">
               Weekly Task Clearance Trends
@@ -362,15 +337,13 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
             </div>
           </div>
         </div>
-
-        {/* Right Column (1/3): AI Productivity Coach & Focus Insights */}
+        {}
         <div className="space-y-6">
           <div className="glass-card p-6 space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-white/5">
               <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase">AI Productivity Coach</h3>
               <Lightbulb className="w-4 h-4 text-cyan-400 animate-pulse" />
             </div>
-
             <div className="space-y-4">
               {loadingStats ? (
                 <div className="space-y-3">
@@ -391,7 +364,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
                       <p className="text-xs text-slate-500 italic">No focus insights generated yet.</p>
                     )}
                   </div>
-
                   <div className="space-y-2">
                     <span className="text-[10px] font-black text-slate-500 tracking-wider uppercase block">Recommendations</span>
                     {analytics?.recommendations && analytics.recommendations.length > 0 ? (
@@ -409,7 +381,6 @@ export default function DashboardPage({ refreshTrigger = 0, onRefresh }: Dashboa
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

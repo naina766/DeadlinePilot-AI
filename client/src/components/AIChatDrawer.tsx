@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-"use client";
 
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { formatISTTime, getCurrentISTDate } from '@/utils/date';
 import { useAuth } from '@/context/AuthContext';
@@ -18,7 +17,6 @@ import {
   ThumbsDown, 
   Paperclip
 } from 'lucide-react';
-
 import ScheduleCard from './ai/cards/ScheduleCard';
 import TaskCard from './ai/cards/TaskCard';
 import AnalyticsCard from './ai/cards/AnalyticsCard';
@@ -34,7 +32,6 @@ import TypingIndicator from './ai/cards/TypingIndicator';
 import Avatar from './ai/cards/Avatar';
 import NotificationCard from './ai/cards/NotificationCard';
 import MarkdownRenderer from './ai/cards/MarkdownRenderer';
-
 interface Message {
   sender: 'user' | 'ai';
   text: string;
@@ -47,16 +44,14 @@ interface Message {
     scheduledEnd?: string;
   }>;
 }
-
 interface AIChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onRefreshTasks?: () => void;
 }
-
 export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onRefreshTasks }) => {
   const { token } = useAuth();
-  
+
   const defaultGreeting: Message = {
     sender: 'ai',
     text: JSON.stringify({
@@ -73,18 +68,16 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
     }),
     timestamp: formatISTTime(getCurrentISTDate())
   };
-
   const { messages, loading, sendMessage, clearHistory } = useAIChat(token, onRefreshTasks);
   const [inputText, setInputText] = useState('');
   const [thinkingIndex, setThinkingIndex] = useState(0);
   const [feedback, setFeedback] = useState<{ [key: number]: 'up' | 'down' | null }>({});
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
-  
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const thinkingStates = [
     "🤖 Reading your schedule...",
     "📅 Checking your calendar...",
@@ -93,7 +86,6 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
     "🚀 Preparing your executive brief..."
   ];
 
-  // Cycle thinking status messages
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (loading) {
@@ -106,22 +98,18 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
-
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
     await sendMessage(text);
     setInputText('');
   };
-
   const handleVoiceInput = (dictatedText: string) => {
     setInputText(dictatedText);
     handleSendMessage(dictatedText);
   };
-
   const clearChat = () => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -129,39 +117,33 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
     }
     clearHistory();
   };
-
   const copyToClipboard = (text: string, idx: number) => {
     let rawText = text;
     try {
       const parsed = JSON.parse(text);
       rawText = parsed.summary || text;
     } catch {
-      // ignore
-    }
 
+    }
     navigator.clipboard.writeText(rawText);
     setCopiedIdx(idx);
     setTimeout(() => setCopiedIdx(null), 2000);
   };
-
   const speakMessage = (text: string, idx: number) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
-
     if (speakingIdx === idx) {
       window.speechSynthesis.cancel();
       setSpeakingIdx(null);
       return;
     }
-
     window.speechSynthesis.cancel();
     let rawText = text;
     try {
       const parsed = JSON.parse(text);
       rawText = parsed.summary || text;
     } catch {
-      // ignore
-    }
 
+    }
     const cleanText = rawText.replace(/[*`|#-]/g, ''); 
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.onend = () => setSpeakingIdx(null);
@@ -169,37 +151,31 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
     setSpeakingIdx(idx);
     window.speechSynthesis.speak(utterance);
   };
-
   const handleFeedback = (idx: number, type: 'up' | 'down') => {
     setFeedback(prev => ({
       ...prev,
       [idx]: prev[idx] === type ? null : type
     }));
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(inputText);
     }
   };
-
   const renderMessageContent = (msg: Message) => {
     if (msg.sender === 'user') {
       return <p className="text-slate-100 whitespace-pre-wrap">{msg.text}</p>;
     }
-
     let parsed = null;
     try {
       parsed = JSON.parse(msg.text);
     } catch {
       return <MarkdownRenderer text={msg.text} />;
     }
-
     if (!parsed || typeof parsed !== 'object') {
       return <p className="text-slate-200">{msg.text}</p>;
     }
-
     return (
       <div className="space-y-4">
         {/* Title and summary */}
@@ -211,11 +187,10 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
           )}
           <TypingIndicator text={parsed.summary} />
         </div>
-
-        {/* Dynamic visual cards mapping */}
+        {}
         {parsed.cards && parsed.cards.length > 0 && (
           <div className="space-y-3.5 pt-2 border-t border-white/5">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {}
             {parsed.cards.map((card: any, cIdx: number) => {
               switch (card.type) {
                 case 'schedule':
@@ -282,8 +257,7 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
             })}
           </div>
         )}
-
-        {/* Suggestion Chips */}
+        {}
         {parsed.quickActions && parsed.quickActions.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-3 border-t border-white/5">
             {parsed.quickActions.map((act: string, aIdx: number) => (
@@ -294,13 +268,11 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
       </div>
     );
   };
-
   if (!isOpen) return null;
-
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-40 bg-black/45 backdrop-blur-[6px] transition-opacity" onClick={onClose} />
-      
+
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -321,7 +293,6 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">AI Productivity Copilot</span>
             </div>
           </div>
-
           <div className="flex items-center gap-1">
             <button 
               onClick={clearChat}
@@ -339,7 +310,6 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
             </button>
           </div>
         </div>
-
         {/* Conversation Box */}
         <div className="flex-1 overflow-y-auto px-6 py-4.5 space-y-5">
           {messages.map((msg, idx) => (
@@ -358,7 +328,6 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
                 }`}
               >
                 {renderMessageContent(msg)}
-
                 {/* Floating action bar on AI hover */}
                 {msg.sender === 'ai' && (
                   <div className="absolute right-3 -bottom-4 bg-[#0F172A] border border-white/5 rounded-lg py-1 px-1.5 flex items-center gap-2.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
@@ -402,14 +371,12 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
                   </div>
                 )}
               </div>
-
-              {/* Timestamp label */}
+              {}
               {msg.timestamp && (
                 <span className="text-[9px] text-slate-500 mt-1 font-semibold pl-1 pr-1 font-mono">
                   {msg.timestamp}
                 </span>
               )}
-
               {/* Action confirmations (if any) */}
               {msg.actions && msg.actions.length > 0 && (
                 <div className="mt-2.5 w-[85%] space-y-2">
@@ -427,7 +394,6 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
               )}
             </motion.div>
           ))}
-
           {/* Cyclical loading & animated thinking dots */}
           {loading && (
             <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-400 bg-white/5 border border-white/5 px-4 py-3 rounded-2xl rounded-bl-none w-fit">
@@ -442,8 +408,7 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
           )}
           <div ref={bottomRef} />
         </div>
-
-        {/* Input box */}
+        {}
         <div className="p-4 border-t border-white/5 bg-slate-900/30 flex items-end gap-2.5 relative">
           <input 
             type="file" 
@@ -463,9 +428,7 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
           >
             <Paperclip className="w-4.5 h-4.5" />
           </button>
-
           <VoiceInput onTranscript={handleVoiceInput} disabled={loading} />
-
           <textarea
             ref={textareaRef}
             rows={Math.min(5, inputText.split('\n').length || 1)}
@@ -475,7 +438,6 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ isOpen, onClose, onR
             placeholder="Ask your AI Co-Pilot..."
             className="flex-grow max-h-32 px-4 py-2.5 text-sm rounded-xl border border-white/5 bg-white/5 text-slate-100 placeholder-slate-500 outline-none focus:border-indigo-500/50 resize-none transition-all duration-150 mb-0.5"
           />
-
           <button
             onClick={() => handleSendMessage(inputText)}
             disabled={loading || !inputText.trim()}

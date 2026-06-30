@@ -1,41 +1,34 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
 
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic,  AlertCircle } from 'lucide-react';
-
 interface VoiceInputProps {
   onTranscript: (text: string) => void;
   disabled?: boolean;
 }
-
 export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, disabled = false }) => {
   const [isListening, setIsListening] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const recognitionRef = useRef<any>(null);
-
   useEffect(() => {
-    // Check browser compatibility
+
     const SpeechRecognition = 
       (window as any).SpeechRecognition || 
       (window as any).webkitSpeechRecognition;
-    
+
     if (SpeechRecognition) {
       const rec = new SpeechRecognition();
       rec.continuous = false;
       rec.interimResults = false;
       rec.lang = 'en-US';
-
       rec.onstart = () => {
         setIsListening(true);
         setErrorMsg('');
       };
-
       rec.onresult = (event: any) => {
         const transcriptText = event.results[0][0].transcript;
         onTranscript(transcriptText);
       };
-
       rec.onerror = (event: any) => {
         console.error("Speech recognition error:", event.error);
         if (event.error === 'not-allowed') {
@@ -45,21 +38,17 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, disabled =
         }
         setIsListening(false);
       };
-
       rec.onend = () => {
         setIsListening(false);
       };
-
       recognitionRef.current = rec;
     }
   }, [onTranscript]);
-
   const toggleListening = () => {
     if (!recognitionRef.current) {
       setErrorMsg('Speech recognition not supported in this browser.');
       return;
     }
-
     if (isListening) {
       recognitionRef.current.stop();
     } else {
@@ -71,7 +60,6 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, disabled =
       }
     }
   };
-
   return (
     <div className="relative inline-block">
       <button
@@ -91,7 +79,6 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, disabled =
           <Mic className="w-5 h-5" />
         )}
       </button>
-
       {errorMsg && (
         <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-48 p-2 rounded-lg bg-rose-950/80 border border-rose-500/30 text-[10px] text-rose-300 text-center flex items-center gap-1 shadow-lg">
           <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-400" />

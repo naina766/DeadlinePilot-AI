@@ -9,8 +9,8 @@ export const SCHEDULE_SCHEMA = {
           title: { type: "string" },
           start: { type: "string" },
           end: { type: "string" },
-          type: { type: "string" }, // e.g. task, meeting, personal
-          priority: { type: "string" }, // Low, Medium, High
+          type: { type: "string" }, 
+          priority: { type: "string" }, 
           duration: { type: "string" },
           status: { type: "string" }
         },
@@ -20,5 +20,4 @@ export const SCHEDULE_SCHEMA = {
   },
   required: ["events"]
 };
-
 export default SCHEDULE_SCHEMA;

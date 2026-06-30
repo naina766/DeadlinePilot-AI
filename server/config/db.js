@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import dns from 'dns';
 import { env } from './env.js';
 import { logger } from './logger.js';
-
 export const connectDB = async () => {
   try {
     logger.info('Connecting to database...');
@@ -10,8 +9,7 @@ export const connectDB = async () => {
     logger.info(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     logger.error(`Database Connection Error: ${error.message}`);
-    
-    // If DNS resolution fails (e.g. querySrv ECONNREFUSED), attempt fallback to public DNS
+
     if (error.message.includes('querySrv') || error.code === 'ECONNREFUSED' || error.message.includes('ECONNREFUSED')) {
       logger.warn('DNS resolution failed with default DNS server. Retrying with public DNS (8.8.8.8, 1.1.1.1)...');
       try {
@@ -23,7 +21,7 @@ export const connectDB = async () => {
         logger.error(`Fallback DNS Connection Error: ${fallbackError.message}`);
       }
     }
-    
+
     logger.warn('Continuing application startup. DB operations will fail until MongoDB is active.');
   }
 };

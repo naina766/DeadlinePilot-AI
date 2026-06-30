@@ -9,7 +9,7 @@ export const STUDY_PLAN_SCHEMA = {
         properties: {
           name: { type: "string" },
           duration: { type: "string" },
-          difficulty: { type: "string" }, // e.g. Easy, Medium, Hard
+          difficulty: { type: "string" }, 
           steps: {
             type: "array",
             items: { type: "string" }
@@ -21,5 +21,4 @@ export const STUDY_PLAN_SCHEMA = {
   },
   required: ["planTitle", "topics"]
 };
-
 export default STUDY_PLAN_SCHEMA;

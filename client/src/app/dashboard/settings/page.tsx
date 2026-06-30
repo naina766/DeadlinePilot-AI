@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { 
@@ -12,22 +11,19 @@ import {
   Loader,
   Cpu
 } from 'lucide-react';
-
 interface ClassItem {
   name: string;
-  days: number[]; // e.g. [1, 3] for Mon, Wed
+  days: number[]; 
   start: string;
   end: string;
 }
-
 export default function SettingsPage() {
   const { token } = useAuth();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Profile configurations
   const [workStart, setWorkStart] = useState("09:00");
   const [workEnd, setWorkEnd] = useState("17:00");
   const [sleepStart, setSleepStart] = useState("23:00");
@@ -35,12 +31,10 @@ export default function SettingsPage() {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [habits, setHabits] = useState({ avgCompletionSpeed: 1.0, delayRatio: 0.15 });
 
-  // Class inputs
   const [newClassName, setNewClassName] = useState('');
   const [newClassDays, setNewClassDays] = useState<number[]>([]);
   const [newClassStart, setNewClassStart] = useState('10:00');
   const [newClassEnd, setNewClassEnd] = useState('11:30');
-
   useEffect(() => {
     const fetchProfile = async () => {
       if (!token) return;
@@ -49,7 +43,7 @@ export default function SettingsPage() {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const profile = await res.json();
-        
+
         setWorkStart(profile.workStart);
         setWorkEnd(profile.workEnd);
         setSleepStart(profile.sleepStart);
@@ -66,7 +60,6 @@ export default function SettingsPage() {
     };
     fetchProfile();
   }, [token]);
-
   const handleAddClass = () => {
     if (!newClassName.trim() || newClassDays.length === 0) return;
     const newClass: ClassItem = {
@@ -79,23 +72,19 @@ export default function SettingsPage() {
     setNewClassName('');
     setNewClassDays([]);
   };
-
   const handleRemoveClass = (idx: number) => {
     setClasses(prev => prev.filter((_, i) => i !== idx));
   };
-
   const toggleDaySelection = (day: number) => {
     setNewClassDays(prev => 
       prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
     );
   };
-
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
     setSaving(true);
     setSuccess(false);
-
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/profile`, {
         method: 'PUT',
@@ -112,7 +101,6 @@ export default function SettingsPage() {
           habits
         })
       });
-
       if (res.ok) {
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
@@ -123,7 +111,6 @@ export default function SettingsPage() {
       setSaving(false);
     }
   };
-
   const weekdays = [
     { label: 'S', value: 0 },
     { label: 'M', value: 1 },
@@ -133,25 +120,22 @@ export default function SettingsPage() {
     { label: 'F', value: 5 },
     { label: 'S', value: 6 },
   ];
-
   const getDayNames = (days: number[]) => {
     const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     return days.map(d => names[d]).join(', ');
   };
-
   return (
     <div className="space-y-6 text-left">
       {loading ? (
         <div className="py-20 flex justify-center"><Loader className="w-8 h-8 animate-spin text-indigo-500" /></div>
       ) : (
         <form onSubmit={handleSaveSettings} className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          {/* Column 1: Time Constraints */}
+          {}
           <div className="glass-card p-6 border-white/10 bg-slate-900/60 shadow-xl space-y-5">
             <div className="flex items-center gap-2 pb-2 border-b border-white/5">
               <Clock className="w-5 h-5 text-indigo-400" />
               <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase">Time Constraints</h3>
             </div>
-
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -169,7 +153,6 @@ export default function SettingsPage() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase">Work/Study Start</label>
@@ -188,15 +171,13 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
-
           {/* Column 2: Classes / Timetables */}
           <div className="glass-card p-6 border-white/10 bg-slate-900/60 shadow-xl space-y-4">
             <div className="flex items-center gap-2 pb-2 border-b border-white/5">
               <GraduationCap className="w-5 h-5 text-purple-400" />
               <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase">Lectures & Timetables</h3>
             </div>
-
-            {/* List of classes */}
+            {}
             <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
               {classes.length === 0 ? (
                 <p className="text-xs text-slate-500 italic py-2 pl-1">No locked classes. AI has full weekday slot access.</p>
@@ -219,8 +200,7 @@ export default function SettingsPage() {
                 ))
               )}
             </div>
-
-            {/* Add class box */}
+            {}
             <div className="p-3.5 rounded-xl border border-white/5 bg-white/5 space-y-3 pt-4">
               <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block">Lock Lecture hours</span>
               <input 
@@ -228,7 +208,6 @@ export default function SettingsPage() {
                 value={newClassName} onChange={(e) => setNewClassName(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-white/5 bg-slate-950/40 text-xs outline-none focus:border-indigo-500/50"
               />
-
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold text-slate-500">Days:</span>
                 <div className="flex gap-1">
@@ -243,7 +222,6 @@ export default function SettingsPage() {
                   ))}
                 </div>
               </div>
-
               <div className="grid grid-cols-2 gap-2">
                 <input 
                   type="time" value={newClassStart} onChange={(e) => setNewClassStart(e.target.value)}
@@ -254,7 +232,6 @@ export default function SettingsPage() {
                   className="px-2 py-1.5 rounded border border-white/5 bg-slate-950/40 text-xs text-slate-200 outline-none"
                 />
               </div>
-
               <button
                 type="button" onClick={handleAddClass}
                 className="w-full py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold transition-all flex items-center justify-center gap-1 shadow-md"
@@ -264,14 +241,12 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
-
           {/* Column 3: AI Coefficients & Save */}
           <div className="glass-card p-6 border-white/10 bg-slate-900/60 shadow-xl space-y-6">
             <div className="flex items-center gap-2 pb-2 border-b border-white/5">
               <Cpu className="w-5 h-5 text-cyan-400" />
               <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase">AI Coefficients</h3>
             </div>
-
             <div className="space-y-4">
               <div className="space-y-1">
                 <div className="flex justify-between text-xs font-bold text-slate-400">
@@ -288,7 +263,6 @@ export default function SettingsPage() {
                   1.0 is normal speed. Increase if you need larger safety buffers.
                 </span>
               </div>
-
               <div className="space-y-1">
                 <div className="flex justify-between text-xs font-bold text-slate-400">
                   <span>Past Delays index</span>
@@ -305,7 +279,6 @@ export default function SettingsPage() {
                 </span>
               </div>
             </div>
-
             <div className="pt-4 space-y-3">
               <button 
                 type="submit" disabled={saving}
@@ -320,7 +293,6 @@ export default function SettingsPage() {
                   </>
                 )}
               </button>
-
               {success && (
                 <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/20 text-xs text-emerald-400 font-bold text-center">
                   ✓ Profile settings updated successfully.

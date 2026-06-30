@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-"use client";
 
+"use client";
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { 
@@ -15,7 +14,6 @@ import {
   Loader
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-
 interface AnalyticsData {
   completionRate: number;
   tasksCompleted: number;
@@ -28,20 +26,17 @@ interface AnalyticsData {
   summary: string;
   dailyCompletionTrend: Array<{ day: string; completed: number }>;
 }
-
 export default function AnalyticsPage() {
   const { token } = useAuth();
-  
+
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Timer states
   const [timerMinutes, setTimerMinutes] = useState(25);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerIntervalId, setTimerIntervalId] = useState<ReturnType<typeof setInterval> | null>(null);
   const [logMessage, setLogMessage] = useState('');
-
   const fetchAnalytics = async () => {
     if (!token) return;
     try {
@@ -56,16 +51,14 @@ export default function AnalyticsPage() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchAnalytics();
   }, [token]);
-
   const handleTimerComplete = async () => {
     setTimerRunning(false);
     if (!token) return;
     try {
-      // Log 25 minutes to backend
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/analytics/log-focus`, {
         method: 'POST',
         headers: {
@@ -83,7 +76,6 @@ export default function AnalyticsPage() {
     }
   };
 
-  // Pomodoro countdown timer logic
   useEffect(() => {
     if (timerRunning) {
       const id = setInterval(() => {
@@ -93,7 +85,7 @@ export default function AnalyticsPage() {
           setTimerMinutes(prev => prev - 1);
           setTimerSeconds(59);
         } else {
-          // Timer finished!
+
           handleTimerComplete();
         }
       }, 1000);
@@ -105,33 +97,29 @@ export default function AnalyticsPage() {
       }
     }
   }, [timerRunning, timerMinutes, timerSeconds]);
-
   const handleStartTimer = () => {
     setTimerRunning(true);
     setLogMessage('');
   };
-
   const handleStopTimer = () => {
     setTimerRunning(false);
   };
-
   const handleResetTimer = () => {
     setTimerRunning(false);
     setTimerMinutes(25);
     setTimerSeconds(0);
     setLogMessage('');
   };
-
   return (
     <div className="space-y-6">
       {loading ? (
         <div className="py-20 flex justify-center"><Loader className="w-8 h-8 animate-spin text-indigo-500" /></div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main stats block */}
+          {}
           <div className="lg:col-span-2 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {/* Card 1: Score */}
+              {}
               <div className="glass-card p-6 flex flex-col justify-between">
                 <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block border-b border-white/5 pb-2">Productivity Rating</span>
                 <div className="py-4">
@@ -139,7 +127,6 @@ export default function AnalyticsPage() {
                   <span className="text-xs text-indigo-400 font-semibold block pt-1">Executive Coach Score</span>
                 </div>
               </div>
-
               {/* Card 2: Focus Hours */}
               <div className="glass-card p-6 flex flex-col justify-between">
                 <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block border-b border-white/5 pb-2">Focus Logged</span>
@@ -148,7 +135,6 @@ export default function AnalyticsPage() {
                   <span className="text-xs text-cyan-400 font-semibold block pt-1">Total Focus Hours</span>
                 </div>
               </div>
-
               {/* Card 3: Completion percentage */}
               <div className="glass-card p-6 flex flex-col justify-between">
                 <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block border-b border-white/5 pb-2">Completed Odds</span>
@@ -158,7 +144,6 @@ export default function AnalyticsPage() {
                 </div>
               </div>
             </div>
-
             {/* Recharts chart */}
             <div className="glass-card p-6 space-y-4">
               <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase border-b border-white/5 pb-2">Completion History</h3>
@@ -176,7 +161,6 @@ export default function AnalyticsPage() {
                 </ResponsiveContainer>
               </div>
             </div>
-
             {/* AI report summary */}
             {data?.summary && (
               <div className="glass-card p-6 border-indigo-500/25 bg-indigo-950/15 relative overflow-hidden">
@@ -191,10 +175,9 @@ export default function AnalyticsPage() {
               </div>
             )}
           </div>
-
-          {/* Sidebar elements: Pomodoro Timer & Reflections */}
+          {}
           <div className="space-y-6">
-            {/* Pomodoro Timer widget */}
+            {}
             <div className="glass-card p-6 border-white/10 bg-slate-900/60 shadow-xl space-y-4 text-center">
               <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block border-b border-white/5 pb-2 text-left">Pomodoro Focus Timer</span>
               <div className="py-4">
@@ -226,7 +209,6 @@ export default function AnalyticsPage() {
                   Reset
                 </button>
               </div>
-
               {logMessage && (
                 <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/20 text-xs text-emerald-400 font-bold flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400" />
@@ -234,8 +216,7 @@ export default function AnalyticsPage() {
                 </div>
               )}
             </div>
-
-            {/* Coach Reflections lists */}
+            {}
             <div className="glass-card p-6 space-y-4 text-left">
               <div className="flex items-center gap-2 text-xs font-black text-slate-400 tracking-wider uppercase border-b border-white/5 pb-2">
                 <Lightbulb className="w-4 h-4 text-cyan-400" />

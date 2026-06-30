@@ -3,7 +3,6 @@ import { PRIORITY_SYSTEM_PROMPT } from '../prompts/priority.system.js';
 import { getPriorityUserPrompt } from '../prompts/priority.user.js';
 import { PRIORITY_SCHEMA } from '../schema/priority.schema.js';
 import { parseJsonResponse } from '../parser/jsonParser.js';
-
 export const priorityAgent = {
   calculatePriorityAndRisk: async (title, description = '', deadline, estimatedHours, userHabits = {}) => {
     const model = getGeminiModel();
@@ -11,14 +10,12 @@ export const priorityAgent = {
       console.warn('No Gemini API connection. Calculating heuristic priority.');
       return priorityAgent._getHeuristicPriority(deadline, estimatedHours, userHabits);
     }
-
     try {
       const currentTime = new Date().toISOString();
       const avgSpeed = userHabits.avgCompletionSpeed || 1.0;
       const delayRatio = userHabits.delayRatio || 0.15;
-
       const userPrompt = getPriorityUserPrompt(title, description, deadline, estimatedHours, currentTime, avgSpeed, delayRatio);
-      
+
       const result = await model.generateContent({
         contents: [
           { role: 'user', parts: [{ text: userPrompt }] }
@@ -29,7 +26,6 @@ export const priorityAgent = {
           responseSchema: PRIORITY_SCHEMA
         }
       });
-
       const data = parseJsonResponse(result.response.text().trim());
       return {
         priority: data.priority || 'Medium',
@@ -41,7 +37,6 @@ export const priorityAgent = {
       return priorityAgent._getHeuristicPriority(deadline, estimatedHours, userHabits);
     }
   },
-
   _getHeuristicPriority: (deadlineStr, estimatedHours, userHabits) => {
     let hoursLeft = 48.0;
     try {
@@ -51,14 +46,11 @@ export const priorityAgent = {
     } catch (e) {
       // Ignore
     }
-
     const avgSpeed = userHabits.avgCompletionSpeed || 1.0;
     const delayRatio = userHabits.delayRatio || 0.15;
     const effectiveHours = estimatedHours * avgSpeed;
-
     let priority = 'Medium';
     let risk = 20;
-
     if (hoursLeft <= 0) {
       priority = 'Critical';
       risk = 100;
@@ -76,7 +68,6 @@ export const priorityAgent = {
         priority = 'Low';
       }
     }
-
     return {
       priority,
       deadlineRiskPercent: risk,

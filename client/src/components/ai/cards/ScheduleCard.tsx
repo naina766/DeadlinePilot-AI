@@ -1,6 +1,5 @@
 import React from 'react';
 import { Calendar, Clock } from 'lucide-react';
-
 interface Event {
   title: string;
   start: string;
@@ -10,11 +9,9 @@ interface Event {
   duration?: string;
   status: string;
 }
-
 interface ScheduleCardProps {
   events: Event[];
 }
-
 export const ScheduleCard: React.FC<ScheduleCardProps> = ({ events }) => {
   if (!events || events.length === 0) {
     return (
@@ -24,20 +21,17 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({ events }) => {
       </div>
     );
   }
-
   return (
     <div className="p-5 rounded-2xl border border-cyan-500/20 bg-[#0E1626]/90 backdrop-blur-md shadow-lg space-y-4 text-left">
       <div className="flex items-center gap-2 text-cyan-400 border-b border-white/5 pb-2.5">
         <Calendar className="w-4 h-4 text-cyan-300" />
         <span className="text-xs font-black tracking-wider uppercase">Today&apos;s Schedule</span>
       </div>
-
       <div className="relative border-l border-cyan-500/20 pl-4 ml-2.5 space-y-5">
         {events.map((evt, idx) => (
           <div key={idx} className="relative group">
             {/* Timeline Dot */}
             <div className="absolute -left-[22.5px] top-1.5 w-3 h-3 rounded-full bg-[#0B1220] border-2 border-cyan-400 group-hover:scale-125 transition-transform" />
-
             <div className="space-y-1">
               <div className="flex justify-between items-center gap-2">
                 <span className="text-xs font-bold text-slate-100 group-hover:text-cyan-300 transition-colors">
@@ -53,7 +47,6 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({ events }) => {
                   {evt.priority}
                 </span>
               </div>
-
               <div className="flex items-center gap-3 text-[11px] text-slate-400">
                 <span className="flex items-center gap-1 font-mono text-cyan-400">
                   <Clock className="w-3.2 h-3.2 shrink-0" />
@@ -75,5 +68,4 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({ events }) => {
     </div>
   );
 };
-
 export default ScheduleCard;

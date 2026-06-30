@@ -4,15 +4,13 @@ import User from '../models/User.js';
 import googleCalendarService from '../services/googleCalendar.service.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import { createEventSchema } from '../validators/calendar.validator.js';
-
 export const calendarController = {
-  // GET /api/calendar/events
+
   getEvents: async (req, res) => {
     try {
       const userId = req.user.uid;
       const events = [];
 
-      // 1. Fetch custom events
       const customEvents = await CalendarEvent.find({ userId });
       customEvents.forEach(e => {
         events.push({
@@ -27,13 +25,11 @@ export const calendarController = {
         });
       });
 
-      // 2. Fetch active tasks scheduled blocks
       const tasks = await Task.find({ 
         userId, 
         scheduledStart: { $ne: null }, 
         scheduledEnd: { $ne: null } 
       });
-
       tasks.forEach(t => {
         if (t.status !== 'Completed') {
           events.push({
@@ -49,34 +45,29 @@ export const calendarController = {
         }
       });
 
-      // 3. Inject sleep blocks and lecture blocks from user profile settings
       const profile = await User.findOne({ firebaseUID: userId });
       if (profile) {
         const sleepStart = profile.settings?.sleepStart || '23:00';
         const sleepEnd = profile.settings?.sleepEnd || '07:00';
         const classes = profile.settings?.classes || [];
-
         const today = new Date();
-        
-        // Inject for yesterday, today, and next 3 days
+
         for (let offset = -1; offset <= 3; offset++) {
           const targetDay = new Date(today);
           targetDay.setDate(today.getDate() + offset);
-          
-          // Sleep block injection
+
           try {
             const [sh, sm] = sleepStart.split(':').map(Number);
             const [eh, em] = sleepEnd.split(':').map(Number);
-            
+
             const sleepS = new Date(targetDay);
             sleepS.setHours(sh, sm, 0, 0);
-            
+
             const sleepE = new Date(targetDay);
-            if (eh < sh) { // spans midnight
+            if (eh < sh) { 
               sleepE.setDate(targetDay.getDate() + 1);
             }
             sleepE.setHours(eh, em, 0, 0);
-
             events.push({
               id: `sleep-${targetDay.toISOString().split('T')[0]}`,
               userId,
@@ -88,20 +79,18 @@ export const calendarController = {
             });
           } catch (err) {}
 
-          // Classes block injection
-          const weekday = targetDay.getDay(); // 0 is Sunday
+          const weekday = targetDay.getDay(); 
           classes.forEach(cl => {
             if (cl.days && cl.days.includes(weekday)) {
               try {
                 const [csh, csm] = cl.start.split(':').map(Number);
                 const [ceh, cem] = cl.end.split(':').map(Number);
-                
+
                 const classS = new Date(targetDay);
                 classS.setHours(csh, csm, 0, 0);
-                
+
                 const classE = new Date(targetDay);
                 classE.setHours(ceh, cem, 0, 0);
-
                 events.push({
                   id: `class-${cl.name}-${targetDay.toISOString().split('T')[0]}`,
                   userId,
@@ -116,7 +105,6 @@ export const calendarController = {
           });
         }
       }
-
       return sendSuccess(res, events);
     } catch (error) {
       console.error('Error fetching calendar events:', error);
@@ -124,17 +112,14 @@ export const calendarController = {
     }
   },
 
-  // POST /api/calendar/events
   createEvent: async (req, res) => {
     const validation = createEventSchema.safeParse(req.body);
     if (!validation.success) {
       return sendError(res, 'Validation error', 400, validation.error.format());
     }
-
     try {
       const userId = req.user.uid;
       const { title, description, start, end, type } = validation.data;
-
       const newEvent = await CalendarEvent.create({
         userId,
         title,
@@ -143,7 +128,6 @@ export const calendarController = {
         endTime: new Date(end),
         type: type || 'meeting'
       });
-
       return sendSuccess(res, newEvent, 201);
     } catch (error) {
       console.error('Error creating calendar event:', error);
@@ -151,7 +135,6 @@ export const calendarController = {
     }
   },
 
-  // POST /api/calendar/sync
   syncCalendar: async (req, res) => {
     try {
       const userId = req.user.uid;
@@ -162,5 +145,4 @@ export const calendarController = {
     }
   }
 };
-
 export default calendarController;

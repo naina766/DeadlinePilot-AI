@@ -1,5 +1,4 @@
 "use client";
-
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -14,16 +13,13 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-
 export default function LandingPage() {
   const { user } = useAuth();
-
   return (
     <div className="relative min-h-screen text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
-      {/* Background glow orbs */}
+      {}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-600/10 blur-[120px] pointer-events-none" />
-
       {/* Navigation */}
       <header className="sticky top-0 z-50 w-full px-6 py-4 flex justify-between items-center border-b border-white/5 bg-background/50 backdrop-blur-md">
         <div className="flex items-center gap-2">
@@ -49,7 +45,6 @@ export default function LandingPage() {
           </Link>
         </div>
       </header>
-
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center max-w-6xl mx-auto">
         <motion.div
@@ -62,16 +57,13 @@ export default function LandingPage() {
             <Sparkles className="w-3.5 h-3.5" />
             AI-Powered Productivity Companion
           </div>
-
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-none bg-gradient-to-b from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
             The Last-Minute <br className="hidden md:block"/>
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">AI Executive Assistant</span>
           </h1>
-
           <p className="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
             Stop letting deadlines overwhelm you. DeadlinePilot is an active agentic coordinator that plans, schedules, prioritizes, and reflection-coaches you to success before time runs out.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
             <Link 
               href={user ? "/dashboard" : "/login"}
@@ -88,8 +80,7 @@ export default function LandingPage() {
             </a>
           </div>
         </motion.div>
-
-        {/* Floating App Mockup */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -146,7 +137,6 @@ export default function LandingPage() {
             </div>
           </div>
         </motion.div>
-
         {/* Feature Grid: The 5 Agents */}
         <section id="features" className="w-full pt-32 space-y-12 text-left">
           <div className="text-center space-y-3">
@@ -213,7 +203,6 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-
       {/* Footer */}
       <footer className="w-full py-8 text-center text-xs text-slate-500 border-t border-white/5 bg-slate-950/40">
         <p>

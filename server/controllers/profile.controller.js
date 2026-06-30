@@ -1,14 +1,12 @@
 import User from '../models/User.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import { updateProfileSchema } from '../validators/profile.validator.js';
-
 export const profileController = {
-  // GET /api/profile
+
   getProfile: async (req, res) => {
     try {
       const userId = req.user.uid;
       let profile = await User.findOne({ firebaseUID: userId });
-
       if (!profile) {
         profile = new User({
           firebaseUID: userId,
@@ -27,7 +25,6 @@ export const profileController = {
         });
         await profile.save();
       }
-
       return sendSuccess(res, profile);
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -35,17 +32,15 @@ export const profileController = {
     }
   },
 
-  // PUT /api/profile
   updateProfile: async (req, res) => {
     const validation = updateProfileSchema.safeParse(req.body);
     if (!validation.success) {
       return sendError(res, 'Validation error', 400, validation.error.format());
     }
-
     try {
       const userId = req.user.uid;
       const { displayName, workStart, workEnd, sleepStart, sleepEnd, classes, habits } = validation.data;
-      
+
       let profile = await User.findOne({ firebaseUID: userId });
       if (!profile) {
         profile = new User({
@@ -53,10 +48,8 @@ export const profileController = {
           email: req.user.email
         });
       }
-
       if (displayName !== undefined) profile.name = displayName;
-      
-      // Update settings properties
+
       profile.settings = profile.settings || {};
       if (workStart !== undefined) profile.settings.workStart = workStart;
       if (workEnd !== undefined) profile.settings.workEnd = workEnd;
@@ -64,7 +57,6 @@ export const profileController = {
       if (sleepEnd !== undefined) profile.settings.sleepEnd = sleepEnd;
       if (classes !== undefined) profile.settings.classes = classes;
       if (habits !== undefined) profile.settings.habits = habits;
-
       await profile.save();
       return sendSuccess(res, profile);
     } catch (error) {
@@ -73,5 +65,4 @@ export const profileController = {
     }
   }
 };
-
 export default profileController;

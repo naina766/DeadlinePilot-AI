@@ -1,6 +1,5 @@
 import CalendarEvent from '../../models/CalendarEvent.js';
 import Task from '../../models/Task.js';
-
 export const getBusySlots = async (userId) => {
   const busy = [];
   try {
@@ -18,7 +17,6 @@ export const getBusySlots = async (userId) => {
         type: 'task'
       });
     });
-
     const cal = await CalendarEvent.find({ userId });
     cal.forEach(c => {
       busy.push({
@@ -34,12 +32,11 @@ export const getBusySlots = async (userId) => {
   }
   return busy;
 };
-
 export const getTodaySchedule = async (userId) => {
   try {
     const allEvents = await getBusySlots(userId);
     const todayStr = new Date().toDateString();
-    
+
     return allEvents.filter(ev => {
       const evStart = new Date(ev.start);
       return evStart.toDateString() === todayStr;
@@ -49,7 +46,6 @@ export const getTodaySchedule = async (userId) => {
     return [];
   }
 };
-
 export const createEvent = async (userId, eventData) => {
   try {
     const { title, description, startTime, endTime, type } = eventData;

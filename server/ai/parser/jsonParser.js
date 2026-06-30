@@ -1,15 +1,14 @@
 export const parseJsonResponse = (text) => {
   if (!text) return null;
-  
+
   let cleaned = text.trim();
-  
-  // Strip markdown code blocks if present
+
   if (cleaned.startsWith('```')) {
     cleaned = cleaned.replace(/^```[a-zA-Z]*\n/, '');
     cleaned = cleaned.replace(/\n```$/, '');
     cleaned = cleaned.trim();
   }
-  
+
   try {
     return JSON.parse(cleaned);
   } catch (err) {

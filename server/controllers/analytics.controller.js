@@ -3,19 +3,17 @@ import User from '../models/User.js';
 import Analytics from '../models/Analytics.js';
 import reflectionAgent from '../ai/agents/reflectionAgent.js';
 import { sendSuccess, sendError } from '../utils/response.js';
-
 export const analyticsController = {
-  // GET /api/analytics
+
   getAnalytics: async (req, res) => {
     try {
       const userId = req.user.uid;
       const tasks = await Task.find({ userId });
-      
+
       const completedTasks = [];
       const missedTasks = [];
       const pendingTasks = [];
       let calculatedFocusHours = 0.0;
-
       tasks.forEach(t => {
         if (t.status === 'Completed') {
           completedTasks.push(t);
@@ -27,19 +25,15 @@ export const analyticsController = {
         }
       });
 
-      // Fetch user focus logs logged in MongoDB Analytics collection
       const analyticsLogs = await Analytics.find({ userId });
       let loggedFocusHours = 0.0;
       analyticsLogs.forEach(log => {
         loggedFocusHours += log.focusTimeHours || 0.0;
       });
-
       const totalFocusHours = loggedFocusHours > 0 ? loggedFocusHours : (calculatedFocusHours > 0 ? calculatedFocusHours * 1.2 : 0.0);
-
       const user = await User.findOne({ firebaseUID: userId });
       const habits = user?.settings?.habits || { avgCompletionSpeed: 1.0, delayRatio: 0.15 };
 
-      // Invoke Reflection Agent
       const reflection = await reflectionAgent.generateReflection(
         completedTasks.length,
         missedTasks.length,
@@ -48,10 +42,8 @@ export const analyticsController = {
         missedTasks.slice(0, 5).map(t => t.title),
         habits
       );
-
       const total = completedTasks.length + missedTasks.length;
       const completionRate = total > 0 ? parseFloat(((completedTasks.length / total) * 100).toFixed(1)) : 100.0;
-
       return sendSuccess(res, {
         completionRate,
         tasksCompleted: completedTasks.length,
@@ -75,7 +67,6 @@ export const analyticsController = {
       return sendError(res, 'Failed to compile analytics summary', 500, error.message);
     }
   },
-
   // POST /api/analytics/log-focus
   logFocus: async (req, res) => {
     try {
@@ -84,13 +75,11 @@ export const analyticsController = {
       if (!minutes) {
         return sendError(res, 'Minutes parameter is required', 400);
       }
-
       const hours = minutes / 60.0;
       const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
-
       // Find and update or create analytics block for today
       let log = await Analytics.findOne({ userId, date: todayStr });
-      
+
       if (log) {
         log.focusTimeHours = (log.focusTimeHours || 0.0) + hours;
         await log.save();
@@ -105,7 +94,6 @@ export const analyticsController = {
         });
         await log.save();
       }
-
       return sendSuccess(res, { status: 'success', loggedHours: parseFloat(hours.toFixed(2)) });
     } catch (error) {
       console.error('Error logging focus time:', error);
@@ -113,5 +101,4 @@ export const analyticsController = {
     }
   }
 };
-
 export default analyticsController;

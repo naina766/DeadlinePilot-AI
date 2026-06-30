@@ -3,9 +3,8 @@ import aiOrchestrator from '../ai/orchestrator/aiOrchestrator.js';
 import taskRepository from '../repositories/task.repository.js';
 import userRepository from '../repositories/user.repository.js';
 import { sendSuccess, sendError } from '../utils/response.js';
-
 export const aiController = {
-  // POST /api/ai/schedule-task/:taskId
+
   scheduleTask: async (req, res) => {
     try {
       const userId = req.user.uid;
@@ -18,7 +17,6 @@ export const aiController = {
     }
   },
 
-  // POST /api/ai/reminder/:taskId
   generateReminder: async (req, res) => {
     try {
       const userId = req.user.uid;
@@ -31,7 +29,6 @@ export const aiController = {
     }
   },
 
-  // GET /api/ai/brief
   getBrief: async (req, res) => {
     try {
       const userId = req.user.uid;
@@ -44,16 +41,14 @@ export const aiController = {
     }
   },
 
-  // POST /api/ai/chat
   chat: async (req, res) => {
     try {
       const userId = req.user.uid;
       const { message, timezoneOffset = 0 } = req.body;
-      
+
       if (!message) {
         return sendError(res, 'Message is required', 400);
       }
-
       const result = await aiService.processAIChat(userId, message, timezoneOffset);
       return sendSuccess(res, result);
     } catch (error) {
@@ -77,16 +72,14 @@ export const aiController = {
     }
   },
 
-  // POST /api/ai/natural-add
   naturalAdd: async (req, res) => {
     try {
       const userId = req.user.uid;
       const { text } = req.body;
-      
+
       if (!text) {
         return sendError(res, 'Text prompt is required', 400);
       }
-
       const task = await aiService.processNaturalQuickAdd(userId, text);
       return sendSuccess(res, task, 201);
     } catch (error) {
@@ -95,12 +88,10 @@ export const aiController = {
     }
   },
 
-  // POST /api/ai/extension-email/:taskId
   generateExtensionRequest: async (req, res) => {
     try {
       const userId = req.user.uid;
       const taskId = req.params.taskId;
-
       const task = await taskRepository.findById(taskId);
       if (!task) {
         return sendError(res, 'Task not found', 404);
@@ -108,10 +99,8 @@ export const aiController = {
       if (task.userId !== userId) {
         return sendError(res, 'Forbidden', 403);
       }
-
       const user = await userRepository.findByUid(userId);
       const userName = user ? user.name : 'DeadlinePilot User';
-
       const emailData = await aiOrchestrator.generateExtensionEmail(
         task.title,
         task.deadline.toISOString(),
@@ -120,7 +109,6 @@ export const aiController = {
         task.description,
         userName
       );
-
       return sendSuccess(res, emailData);
     } catch (error) {
       console.error('Error generating email request extension:', error);
@@ -128,5 +116,4 @@ export const aiController = {
     }
   }
 };
-
 export default aiController;

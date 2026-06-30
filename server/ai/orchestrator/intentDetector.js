@@ -1,14 +1,11 @@
 import { getGeminiModel } from '../../config/gemini.js';
 import { parseJsonResponse } from '../parser/jsonParser.js';
-
 export const intentDetector = {
-  /**
-   * Evaluates if a message is a simple question that can be answered locally.
-   */
+
   isSimpleQuestion: (message) => {
     if (!message) return false;
     const msg = message.toLowerCase().trim();
-    
+
     const simplePatterns = [
       /^(show\s+)?(today'?s\s+)?tasks?(\s+for\s+today)?$/i,
       /^(show\s+)?pending\s+tasks?$/i,
@@ -25,51 +22,44 @@ export const intentDetector = {
       /^(give\s+me\s+a\s+)?workspace\s+summary$/i,
       /^(give\s+me\s+a\s+)?summary$/i
     ];
-    
+
     const keywords = [
       "today's tasks", "pending tasks", "upcoming deadlines", "my habits",
       "my focus sessions", "focus sessions", "analytics", "calendar", 
       "workspace summary", "my schedule"
     ];
-    
+
     if (simplePatterns.some(pat => pat.test(msg))) {
       return true;
     }
-    
+
     const words = msg.split(/\s+/);
     if (words.length <= 4) {
       if (keywords.some(kw => msg.includes(kw))) {
         return true;
       }
     }
-    
+
     return false;
   },
 
-  /**
-   * Classify user query intent into standard categories
-   */
   detectIntents: async (message, clientTimeStr) => {
     const model = getGeminiModel();
     let intents = [];
 
-    // Heuristics first
     const heurIntents = intentDetector.detectIntentsHeuristically(message);
-    
+
     if (intentDetector.isSimpleQuestion(message)) {
       return heurIntents;
     }
-
     if (!model) {
       return heurIntents;
     }
-
     try {
       const intentPrompt = `
         You are DeadlinePilot AI. Analyze the user's message and detect which intents/actions they want to trigger.
         User Message: "${message}"
         Current Client Time: "${clientTimeStr}"
-
         Available Intents:
         1. "view_schedule" - checking schedule, calendar, or free time.
         2. "today_tasks" - checking active tasks, pending tasks, or what to work on.
@@ -85,7 +75,6 @@ export const intentDetector = {
         12. "habit_tracking" - checking daily habit checklist, completion, or streaks.
         13. "extension_request" - generating a draft email asking for deadline extension. Extract: "taskId", "reason".
         14. "chat" - generic chat or general questions.
-
         Format return strictly as a JSON object matching this schema:
         {
           "intents": [
@@ -96,12 +85,11 @@ export const intentDetector = {
           ]
         }
       `;
-
       const result = await model.generateContent({
         contents: [{ role: 'user', parts: [{ text: intentPrompt }] }],
         generationConfig: { responseMimeType: 'application/json' }
       });
-      
+
       const parsed = parseJsonResponse(result.response.text().trim());
       intents = parsed.intents || [];
       if (intents.length === 0) {
@@ -111,14 +99,12 @@ export const intentDetector = {
       console.error("Error in AI intent detection, falling back to heuristics:", err);
       intents = heurIntents;
     }
-
     return intents;
   },
-
   detectIntentsHeuristically: (message) => {
     const msg = message.toLowerCase();
     const intents = [];
-    
+
     if (msg.includes('schedule') || msg.includes('calendar') || msg.includes('meeting') || msg.includes('appointment')) {
       intents.push({ intent: 'view_schedule' });
     }
@@ -143,12 +129,10 @@ export const intentDetector = {
     if (msg.includes('hello') || msg.includes('hi ') || msg.includes('hey') || msg.includes('morning') || msg.includes('evening')) {
       intents.push({ intent: 'chat' });
     }
-
     if (intents.length === 0) {
       intents.push({ intent: 'chat' });
     }
     return intents;
   }
 };
-
 export default intentDetector;

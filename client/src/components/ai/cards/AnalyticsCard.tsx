@@ -1,18 +1,15 @@
 import React from 'react';
 import { BarChart3, Clock, CheckCircle2, TrendingUp } from 'lucide-react';
-
 interface TrendDay {
   day: string;
   hours: number;
 }
-
 interface AnalyticsCardProps {
   focusHours: number;
   productivityScore: number;
   completedTasks: number;
   weeklyTrend: TrendDay[];
 }
-
 export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ 
   focusHours, 
   productivityScore, 
@@ -25,7 +22,6 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
         <BarChart3 className="w-4 h-4 text-cyan-300" />
         <span className="text-xs font-black tracking-wider uppercase">Productivity Analytics</span>
       </div>
-
       {/* Primary stats row */}
       <div className="grid grid-cols-3 gap-3 text-center">
         <div className="p-2.5 rounded-xl border border-white/5 bg-white/5 space-y-1">
@@ -44,8 +40,7 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
           <span className="text-[9px] uppercase tracking-wider text-slate-500 font-bold block">Completed</span>
         </div>
       </div>
-
-      {/* Weekly Trend progress bars */}
+      {}
       {weeklyTrend && weeklyTrend.length > 0 && (
         <div className="space-y-3.5 pt-2">
           <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block pl-0.5">Focus Duration Trend</span>
@@ -68,5 +63,4 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
     </div>
   );
 };
-
 export default AnalyticsCard;

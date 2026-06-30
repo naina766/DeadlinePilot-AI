@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-"use client";
 
+"use client";
 import React, { useState, useEffect } from 'react';
 import { formatISTDate, formatISTTime, getCurrentISTDate, getISTWeekday } from '@/utils/date';
 import { useAuth } from '@/context/AuthContext';
@@ -15,7 +14,6 @@ import {
   Layers,
   ArrowRight
 } from 'lucide-react';
-
 interface CalendarEvent {
   id: string;
   title: string;
@@ -25,15 +23,13 @@ interface CalendarEvent {
   type: 'task' | 'meeting' | 'personal';
   sourceTaskId?: string;
 }
-
 export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: number }) {
   const { token } = useAuth();
-  
+
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
-
   const fetchCalendar = async () => {
     if (!token) return;
     try {
@@ -41,8 +37,7 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      
-      // Sort events by start time
+
       const sorted = data.sort((a: CalendarEvent, b: CalendarEvent) => 
         new Date(a.start).getTime() - new Date(b.start).getTime()
       );
@@ -53,11 +48,9 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchCalendar();
   }, [token, refreshTrigger]);
-
   const handleSyncGCal = async () => {
     if (!token) return;
     setSyncing(true);
@@ -78,7 +71,6 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
     }
   };
 
-  // Group events by day for the next 7 days
   const getNext7Days = () => {
     const days = [];
     const today = getCurrentISTDate();
@@ -89,16 +81,13 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
     }
     return days;
   };
-
   const getEventsForDay = (date: Date) => {
     const targetDateStr = formatISTDate(date);
     return events.filter(e => {
       return formatISTDate(e.start) === targetDateStr;
     });
   };
-
   const next7Days = getNext7Days();
-
   const getEventTypeStyle = (type: string) => {
     switch (type) {
       case 'task': return 'border-indigo-500/20 bg-indigo-500/5 text-indigo-300';
@@ -106,10 +95,9 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
       default: return 'border-purple-500/20 bg-purple-500/5 text-purple-300';
     }
   };
-
   return (
     <div className="space-y-6">
-      {/* Sync Bar */}
+      {}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <p className="text-xs text-slate-400 max-w-md text-left">
           Schedule slots automatically avoiding conflicts. Connect to Google Calendar to integrate external lecture logs and meetings.
@@ -129,13 +117,11 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
           )}
         </button>
       </div>
-
       {syncMessage && (
         <div className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-400 text-left font-semibold">
           💡 {syncMessage}
         </div>
       )}
-
       {/* Week Timeline View */}
       {loading ? (
         <div className="py-20 flex justify-center"><Loader className="w-8 h-8 animate-spin text-indigo-500" /></div>
@@ -144,7 +130,7 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
           {next7Days.map((day, idx) => {
             const dayEvents = getEventsForDay(day);
             const isToday = formatISTDate(day) === formatISTDate(getCurrentISTDate());
-            
+
             return (
               <div 
                 key={idx} 
@@ -166,8 +152,8 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
                     </span>
                   )}
                 </div>
- 
-                {/* Right side: Events List */}
+
+                {}
                 <div className="flex-grow w-full space-y-2 text-left">
                   {dayEvents.length === 0 ? (
                     <p className="text-xs text-slate-500 italic py-2 pl-1">No tasks or blocks scheduled. Enjoy your open space!</p>
@@ -175,7 +161,7 @@ export default function CalendarPage({ refreshTrigger = 0 }: { refreshTrigger?: 
                     dayEvents.map((event, idx) => {
                       const startT = formatISTTime(event.start);
                       const endT = formatISTTime(event.end);
-                      
+
                       return (
                         <div 
                           key={event.id || idx}

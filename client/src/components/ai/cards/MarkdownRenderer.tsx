@@ -1,23 +1,18 @@
 import React from 'react';
-
 interface MarkdownRendererProps {
   text: string;
 }
-
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ text }) => {
   if (!text) return null;
 
-  // Split by newlines to handle blocks (paragraphs and bullet points)
   const lines = text.split('\n');
-
   return (
     <div className="space-y-1.5 whitespace-pre-wrap text-left break-words">
       {lines.map((line, lIdx) => {
-        // Detect bullet list items starting with '-' or '*'
+
         const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
         const cleanLine = isBullet ? line.trim().substring(2) : line;
 
-        // Parse bold elements (**text**)
         const boldParts = cleanLine.split('**');
         const formattedLine = boldParts.map((part, pIdx) => {
           if (pIdx % 2 === 1) {
@@ -40,7 +35,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ text }) => {
             return iPart;
           });
         });
-
         if (isBullet) {
           return (
             <div key={lIdx} className="flex items-start gap-2 pl-3 mt-1">
@@ -49,7 +43,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ text }) => {
             </div>
           );
         }
-
         return (
           <p key={lIdx} className="text-slate-200 text-sm leading-relaxed min-h-[1rem]">
             {formattedLine}
@@ -59,5 +52,4 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ text }) => {
     </div>
   );
 };
-
 export default MarkdownRenderer;

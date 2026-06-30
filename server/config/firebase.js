@@ -1,7 +1,6 @@
 import admin from 'firebase-admin';
 import { env } from './env.js';
 import { logger } from './logger.js';
-
 try {
   if (env.FIREBASE_CREDENTIALS_JSON) {
     const serviceAccount = JSON.parse(env.FIREBASE_CREDENTIALS_JSON);
@@ -15,12 +14,11 @@ try {
     });
     logger.info('Firebase Admin SDK initialized via Application Default Credentials.');
   } else {
-    // We attempt default init, but catch to prevent crashing if no keys exist
+
     admin.initializeApp();
     logger.info('Firebase Admin SDK initialized via default application configuration.');
   }
 } catch (error) {
   logger.warn(`⚠️ Firebase Admin SDK failed to initialize: ${error.message}. Running in Mock Auth fallback mode.`);
 }
-
 export default admin;

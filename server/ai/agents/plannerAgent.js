@@ -3,7 +3,6 @@ import { PLANNER_SYSTEM_PROMPT } from '../prompts/planner.system.js';
 import { getPlannerUserPrompt } from '../prompts/planner.user.js';
 import { PLANNER_SCHEMA } from '../schema/planner.schema.js';
 import { parseJsonResponse } from '../parser/jsonParser.js';
-
 export const plannerAgent = {
   generatePlan: async (title, description = '', estimatedHours = 1.0, deadline = '') => {
     const model = getGeminiModel();
@@ -11,7 +10,6 @@ export const plannerAgent = {
       console.warn('No Gemini API connection. Generating mock execution plan.');
       return plannerAgent._getMockPlan(title, estimatedHours);
     }
-
     try {
       const userPrompt = getPlannerUserPrompt(title, description, estimatedHours, deadline);
       const result = await model.generateContent({
@@ -24,10 +22,9 @@ export const plannerAgent = {
           responseSchema: PLANNER_SCHEMA
         }
       });
-
       const responseText = result.response.text().trim();
       const subtasks = parseJsonResponse(responseText);
-      
+
       if (Array.isArray(subtasks)) {
         return subtasks;
       }
@@ -37,7 +34,6 @@ export const plannerAgent = {
       return plannerAgent._getMockPlan(title, estimatedHours);
     }
   },
-
   _getMockPlan: (title, estimatedHours) => {
     const steps = ['Research & Context Gathering', 'Development & First Draft', 'Testing & Refinement', 'Final Integration & Submit'];
     const hoursPerStep = Math.max(0.5, parseFloat((estimatedHours / steps.length).toFixed(1)));
@@ -48,6 +44,4 @@ export const plannerAgent = {
     }));
   }
 };
-
 export default plannerAgent;
-

@@ -1,13 +1,11 @@
 import React from 'react';
 import { ShieldAlert, AlertTriangle, Calendar } from 'lucide-react';
-
 interface DeadlineCardProps {
   task: string;
   deadline: string;
-  urgency: string; // e.g. Critical, Warning, Moderate
-  risk: string; // e.g. High, Medium
+  urgency: string; 
+  risk: string; 
 }
-
 export const DeadlineCard: React.FC<DeadlineCardProps> = ({
   task,
   deadline,
@@ -25,12 +23,10 @@ export const DeadlineCard: React.FC<DeadlineCardProps> = ({
           {urgency}
         </span>
       </div>
-
       <div className="space-y-1">
         <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">Task at Risk</span>
         <h4 className="text-sm font-black text-slate-100">{task}</h4>
       </div>
-
       <div className="grid grid-cols-2 gap-3 text-[11px] text-slate-400 font-medium">
         <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/5 border border-white/5">
           <Calendar className="w-3.5 h-3.5 text-rose-400" />
@@ -44,5 +40,4 @@ export const DeadlineCard: React.FC<DeadlineCardProps> = ({
     </div>
   );
 };
-
 export default DeadlineCard;

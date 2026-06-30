@@ -1,32 +1,26 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Compass, AlertCircle, Loader } from 'lucide-react';
-
 export default function LoginPage() {
   const { user, loginWithGoogle, loginWithEmail, signUpWithEmail, loginWithMock, isMock } = useAuth();
   const router = useRouter();
-
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     if (user) {
       router.push('/dashboard');
     }
   }, [user, router]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
     try {
       if (isSignUp) {
         if (!name) {
@@ -46,7 +40,6 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
   const handleGoogleLogin = async () => {
     setError('');
     setIsLoading(true);
@@ -60,7 +53,6 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
   const handleDemoBypass = () => {
     setError('');
     setIsLoading(true);
@@ -74,13 +66,11 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="relative min-h-screen flex items-center justify-center p-6 text-slate-100 selection:bg-indigo-500 selection:text-white">
-      {/* Background blobs */}
+      {}
       <div className="absolute top-1/4 left-1/4 w-[350px] h-[350px] rounded-full bg-indigo-600/10 blur-[90px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-purple-600/10 blur-[90px] pointer-events-none" />
-
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="flex flex-col items-center text-center gap-2">
@@ -94,22 +84,19 @@ export default function LoginPage() {
             Authenticate to sync your schedules and pilot your deadlines.
           </p>
         </div>
-
-        {/* Card */}
+        {}
         <div className="glass-card p-8 border-white/10 bg-slate-950/50 shadow-2xl relative overflow-hidden">
           {isMock && (
             <div className="absolute top-0 left-0 right-0 py-1 bg-amber-500/20 border-b border-amber-500/35 text-[10px] text-center font-semibold text-amber-300 uppercase tracking-wider">
               ⚡ Demo Offline Mode Active
             </div>
           )}
-
           {error && (
             <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-2.5 text-xs text-rose-400 mb-6">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               <span>{error}</span>
             </div>
           )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div className="space-y-1.5">
@@ -124,7 +111,6 @@ export default function LoginPage() {
                 />
               </div>
             )}
-
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400 pl-1">Email Address</label>
               <input 
@@ -136,7 +122,6 @@ export default function LoginPage() {
                 className="w-full px-4 py-3 rounded-xl border border-white/5 bg-white/5 focus:bg-slate-900 focus:border-indigo-500/50 text-sm text-slate-100 outline-none transition-all"
               />
             </div>
-
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400 pl-1">Password</label>
               <input 
@@ -148,7 +133,6 @@ export default function LoginPage() {
                 className="w-full px-4 py-3 rounded-xl border border-white/5 bg-white/5 focus:bg-slate-900 focus:border-indigo-500/50 text-sm text-slate-100 outline-none transition-all"
               />
             </div>
-
             <button 
               type="submit"
               disabled={isLoading}
@@ -163,13 +147,11 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
           <div className="relative flex py-4 items-center">
             <div className="flex-grow border-t border-white/5"></div>
             <span className="flex-shrink mx-4 text-slate-500 text-[10px] font-bold uppercase tracking-wider">or</span>
             <div className="flex-grow border-t border-white/5"></div>
           </div>
-
           {/* Google Login */}
           <button 
             type="button"
@@ -185,7 +167,6 @@ export default function LoginPage() {
             </svg>
             Continue with Google
           </button>
-
           {/* Demo Bypass button */}
           <button 
             type="button"
@@ -196,7 +177,6 @@ export default function LoginPage() {
             ⚡ Continue in Demo Mode
           </button>
         </div>
-
         {/* Toggle link */}
         <div className="text-center">
           <button 

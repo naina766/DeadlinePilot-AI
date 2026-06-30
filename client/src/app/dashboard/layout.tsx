@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
@@ -19,22 +18,19 @@ import {
   Sparkles,
   Loader
 } from 'lucide-react';
-
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
   }, [user, loading, router]);
-
   if (loading || !user) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 gap-3">
@@ -43,7 +39,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
     );
   }
-
   const menuItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Task Pilot", href: "/dashboard/tasks", icon: ListTodo },
@@ -52,12 +47,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Analytics", href: "/dashboard/analytics", icon: TrendingUp },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
-
   const handleRefresh = () => {
     // Increment to propagate tasks updates
     setRefreshTrigger(prev => prev + 1);
   };
-
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 flex overflow-hidden">
       {/* Sidebar for desktop */}
@@ -71,7 +64,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               DeadlinePilot
             </span>
           </div>
-
           <nav className="px-4 space-y-1">
             {menuItems.map((item, idx) => {
               const Icon = item.icon;
@@ -93,7 +85,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
           </nav>
         </div>
-
         {/* User profile footer */}
         <div className="p-4 border-t border-white/5 bg-slate-950/20 space-y-3">
           <div className="flex items-center gap-3">
@@ -116,10 +107,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
         </div>
       </aside>
-
-      {/* Main dashboard content container */}
+      {}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Header bar */}
+        {}
         <header className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-slate-900/10 backdrop-blur-md shrink-0">
           <div className="flex items-center gap-3">
             <button 
@@ -132,9 +122,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {menuItems.find(m => m.href === pathname)?.name || "Dashboard"}
             </h2>
           </div>
-
           <div className="flex items-center gap-3">
-            {/* Quick Trigger AI chat drawer */}
+            {}
             <button
               onClick={() => setChatOpen(true)}
               className="px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/15 flex items-center gap-2 transition-all duration-300"
@@ -144,15 +133,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
           </div>
         </header>
-
-        {/* Subpage content mounting */}
+        {}
         <main className="flex-grow overflow-y-auto p-6 relative">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {}
           {React.cloneElement(children as React.ReactElement<any>, { refreshTrigger, onRefresh: handleRefresh })}
         </main>
       </div>
-
-      {/* Mobile Drawer Navigation overlay */}
+      {}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm lg:hidden flex">
           <div className="w-64 bg-slate-950 border-r border-white/5 flex flex-col justify-between p-6">
@@ -213,15 +200,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       )}
-
-      {/* Backdrop Dimming Overlay when chat is open */}
+      {}
       {chatOpen && (
         <div 
           className="fixed inset-0 z-40 bg-black/45 backdrop-blur-[6px] transition-all duration-300"
           onClick={() => setChatOpen(false)}
         />
       )}
-
       {/* Floating AI Chat Drawer */}
       <AIChatDrawer 
         isOpen={chatOpen} 

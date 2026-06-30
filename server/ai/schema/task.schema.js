@@ -7,7 +7,7 @@ export const TASK_SCHEMA = {
         type: "object",
         properties: {
           title: { type: "string" },
-          priority: { type: "string" }, // Low, Medium, High
+          priority: { type: "string" }, 
           deadline: { type: "string" },
           riskScore: { type: "number" },
           completionPercent: { type: "number" }
@@ -18,5 +18,4 @@ export const TASK_SCHEMA = {
   },
   required: ["tasks"]
 };
-
 export default TASK_SCHEMA;

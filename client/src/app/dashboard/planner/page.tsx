@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from 'react';
 import { formatISTDate, formatISTTime } from '@/utils/date';
 import { useAuth } from '@/context/AuthContext';
@@ -12,13 +11,11 @@ import {
   Check, 
   Loader
 } from 'lucide-react';
-
 interface SubTask {
   title: string;
   estimatedHours: number;
   status: string;
 }
-
 interface GeneratedPlan {
   title: string;
   priority: string;
@@ -27,25 +24,22 @@ interface GeneratedPlan {
   scheduledEnd?: string;
   subtasks: SubTask[];
 }
-
 export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
   const { token } = useAuth();
-  
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('2');
   const [category, setCategory] = useState('Study');
-  
+
   const [loading, setLoading] = useState(false);
   const [plan, setPlan] = useState<GeneratedPlan | null>(null);
-
   const handleGeneratePlan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token || !title || !deadline) return;
     setLoading(true);
     setPlan(null);
-
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/tasks`, {
         method: 'POST',
@@ -61,17 +55,14 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
           category
         })
       });
-
       if (res.ok) {
         const data = await res.json();
-        
-        // Auto-schedule task immediately
+
         const schRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/ai/schedule-task/${data._id}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const schData = await schRes.json();
-
         setPlan({
           title: data.title,
           priority: data.priority,
@@ -81,7 +72,6 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
           subtasks: data.subtasks || []
         });
 
-        // Reset inputs
         setTitle('');
         setDescription('');
         setDeadline('');
@@ -94,17 +84,15 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
       setLoading(false);
     }
   };
-
   return (
     <div className="space-y-6 text-left">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left Column: Form Input */}
+        {}
         <div className="glass-card p-6 border-white/10 bg-slate-900/60 shadow-xl space-y-4">
           <div className="flex items-center gap-2 pb-2 border-b border-white/5">
             <Cpu className="w-5 h-5 text-indigo-400 animate-pulse" />
             <h3 className="font-extrabold text-slate-200 text-sm tracking-wider uppercase">AI Agent Scheduler Plan</h3>
           </div>
-
           <form onSubmit={handleGeneratePlan} className="space-y-4">
             <div className="space-y-1">
               <label className="text-[10px] font-bold text-slate-400 uppercase pl-0.5">Objective Goal</label>
@@ -114,7 +102,6 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
                 className="w-full px-4 py-2.5 rounded-xl border border-white/5 bg-white/5 text-sm outline-none focus:border-indigo-500/50"
               />
             </div>
-
             <div className="space-y-1">
               <label className="text-[10px] font-bold text-slate-400 uppercase pl-0.5">Urgency/Goal context</label>
               <textarea 
@@ -123,7 +110,6 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
                 className="w-full px-4 py-2.5 rounded-xl border border-white/5 bg-white/5 text-sm outline-none focus:border-indigo-500/50"
               />
             </div>
-
             <div className="space-y-1">
               <label className="text-[10px] font-bold text-slate-400 uppercase pl-0.5">Goal Deadline</label>
               <input 
@@ -132,7 +118,6 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
                 className="w-full px-4 py-2.5 rounded-xl border border-white/5 bg-white/5 text-sm outline-none focus:border-indigo-500/50 text-slate-200"
               />
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase pl-0.5">Duration (Hours)</label>
@@ -154,7 +139,6 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
                 </select>
               </div>
             </div>
-
             <button 
               type="submit" disabled={loading}
               className="w-full py-3.5 mt-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-2 transition-all shadow-lg"
@@ -170,12 +154,11 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
             </button>
           </form>
         </div>
-
-        {/* Right Column: Visualization Canvas */}
+        {}
         <div className="lg:col-span-2 space-y-6">
           {plan ? (
             <div className="space-y-6">
-              {/* Header metrics */}
+              {}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="glass-card p-4 border-white/5 bg-slate-900/30 text-left">
                   <span className="text-[10px] font-black text-slate-500 tracking-wider uppercase block">PRIORITY</span>
@@ -196,20 +179,18 @@ export default function PlannerPage({ onRefresh }: { onRefresh?: () => void }) {
                   )}
                 </div>
               </div>
-
               {/* Connected Step flow chart */}
               <div className="glass-card p-6 border-white/5 bg-slate-900/30 relative">
                 <div className="absolute top-[20%] bottom-[20%] left-10 w-0.5 bg-slate-800 pointer-events-none hidden sm:block" />
-                
+
                 <div className="space-y-6 relative">
                   <div className="pb-2 border-b border-white/5">
                     <h3 className="font-extrabold text-sm tracking-wider uppercase text-slate-400">Chronological Flow Chart</h3>
                   </div>
-
                   <div className="space-y-4">
                     {plan.subtasks.map((sub, idx) => (
                       <div key={idx} className="flex gap-4 items-start text-left">
-                        {/* Step circle */}
+                        {}
                         <div className="w-8 h-8 rounded-full border border-indigo-500/30 bg-indigo-950 flex items-center justify-center shrink-0 text-indigo-400 text-xs font-bold font-mono">
                           {idx + 1}
                         </div>

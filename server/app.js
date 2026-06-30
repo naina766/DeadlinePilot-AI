@@ -3,7 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
-
 import tasksRouter from './routes/tasks.js';
 import aiRouter from './routes/ai.js';
 import calendarRouter from './routes/calendar.js';
@@ -13,10 +12,8 @@ import healthRouter from './routes/health.js';
 import errorHandler from './middleware/errorHandler.js';
 import { logger } from './config/logger.js';
 import admin from './config/firebase.js';
-
+import { env } from './config/env.js';
 const app = express();
-
-// Security Headers
 app.use(
   helmet({
     crossOriginOpenerPolicy: {
@@ -24,39 +21,45 @@ app.use(
     },
   })
 );
-
-// Rate Limiter
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per 15 minutes
+  windowMs: 15 * 60 * 1000, 
+  max: 200, 
   message: { error: 'Too many requests. Please try again later.' }
 });
 app.use(limiter);
-
-// Enable CORS
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3001'
+];
+if (env.CLIENT_URL) {
+  const urls = env.CLIENT_URL.split(',').map(url => url.trim());
+  allowedOrigins.push(...urls);
+}
 app.use(cors({
-  origin: '*', // For production, restrict this to specific domain URLs
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
-
 app.use(express.json());
-
-// Request logging via Morgan + Winston stream
 const morganStream = {
   write: (message) => logger.info(message.trim())
 };
 app.use(morgan('short', { stream: morganStream }));
-
-// Legacy/Core Routes
 app.use('/api/tasks', tasksRouter);
 app.use('/api/ai', aiRouter);
 app.use('/api/calendar', calendarRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/health', healthRouter);
-
-// Health Check Endpoint
 app.get('/', (req, res) => {
   res.json({
     status: 'online',
@@ -65,9 +68,6 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-
-// Centralized Error Handling Middleware
 app.use(errorHandler);
-
 export default app;
 export { app };

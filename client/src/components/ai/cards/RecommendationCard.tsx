@@ -1,15 +1,13 @@
 import React from 'react';
 import { Lightbulb, ArrowRight } from 'lucide-react';
-
 interface RecommendationCardProps {
   recommendation: string;
-  estimatedImpact: string; // e.g. High, Medium, Low
+  estimatedImpact: string; 
   timeRequired: string;
   actionButtonText?: string;
   actionPrompt?: string;
   onActionClick?: (prompt: string) => void;
 }
-
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   recommendation,
   estimatedImpact,
@@ -35,7 +33,6 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           Impact: {estimatedImpact}
         </span>
       </div>
-
       <div className="space-y-2">
         <p className="text-[13px] leading-[1.6] text-slate-200 font-medium">
           {recommendation}
@@ -44,7 +41,6 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           ESTIMATED TIME: <span className="text-cyan-400 font-mono font-bold">{timeRequired}</span>
         </div>
       </div>
-
       {actionButtonText && actionPrompt && onActionClick && (
         <button
           onClick={() => onActionClick(actionPrompt)}
@@ -57,5 +53,4 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
     </div>
   );
 };
-
 export default RecommendationCard;

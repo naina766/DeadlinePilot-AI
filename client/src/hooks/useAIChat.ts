@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react';
 import { sendChatMessage } from '@/lib/api/chat.api';
 import { formatISTTime, getCurrentISTDate } from '@/utils/date';
-
 export interface Message {
   sender: 'user' | 'ai';
   text: string;
   timestamp: string;
   actions?: any[];
 }
-
 export const useAIChat = (token: string | null, onRefreshTasks?: () => void) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Initialize chat history from session or use standard greeting
   useEffect(() => {
     const localHistory = sessionStorage.getItem('deadline_pilot_chat_history');
     if (localHistory) {
@@ -24,7 +21,6 @@ export const useAIChat = (token: string | null, onRefreshTasks?: () => void) => 
         console.warn("Failed to load session chat history:", e);
       }
     }
-
     const defaultGreeting: Message = {
       sender: 'ai',
       text: JSON.stringify({
@@ -43,37 +39,31 @@ export const useAIChat = (token: string | null, onRefreshTasks?: () => void) => 
     };
     setMessages([defaultGreeting]);
   }, []);
-
   const saveHistory = (newMessages: Message[]) => {
     setMessages(newMessages);
     sessionStorage.setItem('deadline_pilot_chat_history', JSON.stringify(newMessages));
   };
-
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || !token) return;
-
     const userMsg: Message = {
       sender: 'user',
       text,
       timestamp: formatISTTime(getCurrentISTDate())
     };
-
     const updated = [...messages, userMsg];
     saveHistory(updated);
     setLoading(true);
-
     try {
       const data = await sendChatMessage(text, token);
-      
+
       const aiMsg: Message = {
         sender: 'ai',
         text: data.reply,
         timestamp: formatISTTime(getCurrentISTDate()),
         actions: data.suggestedActions
       };
-
       saveHistory([...updated, aiMsg]);
-      
+
       if (data.suggestedActions && data.suggestedActions.length > 0 && onRefreshTasks) {
         onRefreshTasks();
       }
@@ -95,7 +85,6 @@ export const useAIChat = (token: string | null, onRefreshTasks?: () => void) => 
       setLoading(false);
     }
   };
-
   const clearChatHistory = () => {
     sessionStorage.removeItem('deadline_pilot_chat_history');
     const defaultGreeting: Message = {
@@ -116,7 +105,6 @@ export const useAIChat = (token: string | null, onRefreshTasks?: () => void) => 
     };
     setMessages([defaultGreeting]);
   };
-
   return {
     messages,
     loading,
@@ -124,5 +112,4 @@ export const useAIChat = (token: string | null, onRefreshTasks?: () => void) => 
     clearHistory: clearChatHistory
   };
 };
-
 export default useAIChat;

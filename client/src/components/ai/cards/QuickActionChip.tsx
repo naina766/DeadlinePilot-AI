@@ -1,12 +1,10 @@
 import React from 'react';
-
 interface QuickActionChipProps {
   label: string;
   onClick: (value: string) => void;
 }
-
 export const QuickActionChip: React.FC<QuickActionChipProps> = ({ label, onClick }) => {
-  // Strip starting emojis if present to make clean payload query if needed, or send raw
+
   return (
     <button
       onClick={() => onClick(label)}
@@ -16,5 +14,4 @@ export const QuickActionChip: React.FC<QuickActionChipProps> = ({ label, onClick
     </button>
   );
 };
-
 export default QuickActionChip;
