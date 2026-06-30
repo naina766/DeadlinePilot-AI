@@ -17,7 +17,13 @@ import admin from './config/firebase.js';
 const app = express();
 
 // Security Headers
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: {
+      policy: "same-origin-allow-popups",
+    },
+  })
+);
 
 // Rate Limiter
 const limiter = rateLimit({
